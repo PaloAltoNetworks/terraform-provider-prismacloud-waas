@@ -5,13 +5,13 @@ import (
 	"flag"
 	"log"
 
+	"github.com/PaloAltoNetworks/terraform-provider-prismacloud-waas/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/hashicorp/terraform-provider-scaffolding-framework/internal/provider"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
 
-// If you do not have terraform installed, you can remove the formatting command, but its suggested to
+// If you do not have terraform installed, you can remove the formatting command, but it's suggested to
 // ensure the documentation is formatted properly.
 //go:generate terraform fmt -recursive ./examples/
 
@@ -36,7 +36,7 @@ func main() {
 
 	opts := providerserver.ServeOpts{
 		// TODO: Update this string with the published name of your provider.
-		Address: "registry.terraform.io/hashicorp/scaffolding",
+		Address: "terraform.local/PaloAltoNetworks/prismacloud-waas",
 		Debug:   debug,
 	}
 

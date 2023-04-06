@@ -2,8 +2,7 @@
 *.exe
 .DS_Store
 example.tf
-terraform.tfplan
-terraform.tfstate
+
 bin/
 dist/
 modules-dev/
@@ -14,8 +13,21 @@ website/build
 website/node_modules
 .vagrant/
 *.backup
-./*.tfstate
-.terraform/
+
+terraform.tfplan
+terraform.tfstate
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+.terraform.lock.hcl
+
+*.tfvars
+
 *.log
 *.bak
 *~
@@ -23,7 +35,6 @@ website/node_modules
 .idea
 *.iml
 *.test
-*.iml
 
 website/vendor
 
