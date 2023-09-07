@@ -190,7 +190,7 @@ func TestClient_ListCollections(t *testing.T) {
 	})
 }
 
-func newClient(s *httptest.Server) (Client, error) {
+func newClient(s *httptest.Server) (*Client, error) {
 	return NewClient(Config{
 		ConsoleURL:         s.URL,
 		APIVersion:         "vx.x",

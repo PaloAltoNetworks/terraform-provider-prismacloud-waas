@@ -365,7 +365,9 @@ type CreateApplicationSpecRequest struct {
 }
 
 func (c *Client) CreateApplicationSpec(ctx context.Context, req CreateApplicationSpecRequest) (ApplicationSpecVersion, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
@@ -373,7 +375,7 @@ func (c *Client) CreateApplicationSpec(ctx context.Context, req CreateApplicatio
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
-	pv, err := c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	pv, err := c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
@@ -385,7 +387,9 @@ type ListApplicationSpecsRequest struct {
 }
 
 func (c *Client) ListApplicationSpecs(ctx context.Context, req ListApplicationSpecsRequest) (ListApplicationSpecsResponse, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{})
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{})
 	if err != nil {
 		return ListApplicationSpecsResponse{}, err
 	}
@@ -419,7 +423,9 @@ type GetApplicationSpecRequest struct {
 }
 
 func (c *Client) GetApplicationSpec(ctx context.Context, req GetApplicationSpecRequest) (ApplicationSpecVersion, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
@@ -432,7 +438,9 @@ type UpdateApplicationSpecRequest struct {
 }
 
 func (c *Client) UpdateApplicationSpec(ctx context.Context, req UpdateApplicationSpecRequest) (ApplicationSpecVersion, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
@@ -440,7 +448,7 @@ func (c *Client) UpdateApplicationSpec(ctx context.Context, req UpdateApplicatio
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
-	pv, err := c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	pv, err := c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	if err != nil {
 		return ApplicationSpecVersion{}, err
 	}
@@ -456,7 +464,9 @@ type DeleteApplicationSpecRequest struct {
 type DeleteApplicationSpecResponse struct{}
 
 func (c *Client) DeleteApplicationSpec(ctx context.Context, req DeleteApplicationSpecRequest) (DeleteApplicationSpecResponse, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return DeleteApplicationSpecResponse{}, err
 	}
@@ -467,6 +477,6 @@ func (c *Client) DeleteApplicationSpec(ctx context.Context, req DeleteApplicatio
 	if err != nil {
 		return DeleteApplicationSpecResponse{}, err
 	}
-	_, err = c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	_, err = c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	return DeleteApplicationSpecResponse{}, err
 }

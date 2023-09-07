@@ -43,6 +43,12 @@ type GetPolicyRequest struct {
 }
 
 func (c *Client) GetPolicy(ctx context.Context, req GetPolicyRequest) (PolicyVersion, error) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+	return c.getPolicy(ctx, req)
+}
+
+func (c *Client) getPolicy(ctx context.Context, req GetPolicyRequest) (PolicyVersion, error) {
 	builder, err := c.getPolicyEndpointBuilder(req.PolicyType)
 	if err != nil {
 		return PolicyVersion{}, err
@@ -68,7 +74,13 @@ type UpdatePolicyRequest struct {
 }
 
 func (c *Client) UpdatePolicy(ctx context.Context, req UpdatePolicyRequest) (PolicyVersion, error) {
-	currentPolicy, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	return c.updatePolicy(ctx, req)
+}
+
+func (c *Client) updatePolicy(ctx context.Context, req UpdatePolicyRequest) (PolicyVersion, error) {
+	currentPolicy, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return PolicyVersion{}, err
 	}
@@ -83,7 +95,7 @@ func (c *Client) UpdatePolicy(ctx context.Context, req UpdatePolicyRequest) (Pol
 	if err != nil {
 		return PolicyVersion{}, err
 	}
-	return c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	return c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 }
 
 func (p *Policy) CreateRuleVersion(r Rule) (RuleVersion, error) {

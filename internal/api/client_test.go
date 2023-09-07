@@ -49,19 +49,18 @@ func TestNewClient(t *testing.T) {
 		t.Error(err)
 	}
 
-	t.Run("list_collections", func(t *testing.T) {
-		resp, err := c.ListCollections(context.Background(), ListCollectionsRequest{})
-		if err != nil {
-			t.Error(err)
-		}
-		b, err := json.MarshalIndent(resp, "", "\t")
-		if err != nil {
-			t.Error(err)
-		}
-		fmt.Printf("%s", b)
-	})
+	//t.Run("list_collections", func(t *testing.T) {
+	//	resp, err := c.ListCollections(context.Background(), ListCollectionsRequest{})
+	//	if err != nil {
+	//		t.Error(err)
+	//	}
+	//	b, err := json.MarshalIndent(resp, "", "\t")
+	//	if err != nil {
+	//		t.Error(err)
+	//	}
+	//	fmt.Printf("%s", b)
+	//})
 
-	var rules []RuleVersion
 	t.Run("get_policy", func(t *testing.T) {
 		ctx := context.Background()
 		resp, err := c.GetPolicy(ctx, GetPolicyRequest{PolicyType: container})
@@ -73,24 +72,49 @@ func TestNewClient(t *testing.T) {
 			t.Error(err)
 		}
 		fmt.Printf("%s", b)
-		rules, err = c.ListRules(ctx, ListRulesRequest{})
-	})
+		rules, err := c.ListRules(ctx, ListRulesRequest{PolicyType: container})
 
-	if len(rules) > 0 {
-		t.Run("get_rule", func(t *testing.T) {
-			rule := rules[0]
-			resp, err := c.GetRule(context.Background(), GetRuleRequest{Name: rule.Name, PolicyType: container})
-			if err != nil {
-				t.Error(err)
-			}
-			b, err := json.MarshalIndent(resp, "", "\t")
-			if err != nil {
-				t.Error(err)
-			}
-			fmt.Printf("%s", b)
-		})
-	} else {
-		fmt.Println("no rules found for container policy")
-	}
+		if len(rules) > 0 {
+			t.Run("get_rule", func(t *testing.T) {
+				rule := rules[0]
+				resp, err := c.GetRule(context.Background(), GetRuleRequest{Name: rule.Name, PolicyType: container})
+				if err != nil {
+					t.Error(err)
+				}
+				b, err := json.MarshalIndent(resp, "", "\t")
+				if err != nil {
+					t.Error(err)
+				}
+				fmt.Printf("%s", b)
+			})
+			t.Run("update_rule", func(t *testing.T) {
+				rule := rules[0]
+				rule.ReadTimeoutSeconds = rule.ReadTimeoutSeconds + 1
+				resp, err := c.UpdateRule(ctx, UpdateRuleRequest{container, rule})
+				if err != nil {
+					t.Error(err)
+				}
+				b, err := json.MarshalIndent(resp, "", "\t")
+				if err != nil {
+					t.Error(err)
+				}
+				fmt.Printf("%s", b)
+			})
+			t.Run("get_rule_again", func(t *testing.T) {
+				rule := rules[0]
+				resp, err := c.GetRule(context.Background(), GetRuleRequest{Name: rule.Name, PolicyType: container})
+				if err != nil {
+					t.Error(err)
+				}
+				b, err := json.MarshalIndent(resp, "", "\t")
+				if err != nil {
+					t.Error(err)
+				}
+				fmt.Printf("%s", b)
+			})
+		} else {
+			fmt.Println("no rules found for container policy")
+		}
+	})
 
 }

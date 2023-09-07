@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 type Rule struct {
@@ -30,7 +28,36 @@ type Rule struct {
 }
 
 func (r Rule) Version() string {
-	b, _ := json.Marshal(r)
+	v := struct {
+		AllowMalformedHTTPHeaderNames bool              `json:"allowMalformedHttpHeaderNames,omitempty"`
+		ApplicationsSpec              []ApplicationSpec `json:"applicationsSpec,omitempty"`
+		AutoProtectPorts              bool              `json:"autoProtectPorts"`
+		Collections                   []CollectionKey   `json:"collections"`
+		Disabled                      bool              `json:"disabled,omitempty"`
+		Name                          string            `json:"name"`
+		Notes                         string            `json:"notes,omitempty"`
+		OutOfBandScope                string            `json:"outOfBandScope"`
+		PreviousName                  string            `json:"previousName"`
+		ReadTimeoutSeconds            int               `json:"readTimeoutSeconds"`
+		SkipAPILearning               bool              `json:"skipAPILearning"`
+		TrafficMirroring              TrafficMirroring  `json:"trafficMirroring"`
+		Windows                       bool              `json:"windows"`
+	}{
+		r.AllowMalformedHTTPHeaderNames,
+		r.ApplicationsSpec,
+		r.AutoProtectPorts,
+		r.Collections,
+		r.Disabled,
+		r.Name,
+		r.Notes,
+		r.OutOfBandScope,
+		r.PreviousName,
+		r.ReadTimeoutSeconds,
+		r.SkipAPILearning,
+		r.TrafficMirroring,
+		r.Windows,
+	}
+	b, _ := json.Marshal(v)
 	bv := sha256.Sum256(b)
 	return fmt.Sprintf("sha256:%s", hex.EncodeToString(bv[:]))
 }
@@ -57,13 +84,15 @@ type CreateRuleRequest struct {
 }
 
 func (c *Client) CreateRule(ctx context.Context, req CreateRuleRequest) (RuleVersion, error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 	if err := req.PolicyType.Validate(); err != nil {
 		return RuleVersion{}, err
 	}
 	if req.Name == "" {
 		return RuleVersion{}, fmt.Errorf("%w: name", MissingRequiredValue)
 	}
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return RuleVersion{}, err
 	}
@@ -72,14 +101,7 @@ func (c *Client) CreateRule(ctx context.Context, req CreateRuleRequest) (RuleVer
 		return RuleVersion{}, err
 	}
 
-	b, err := json.MarshalIndent(req.Rule, "", "\t")
-	if err != nil {
-		return RuleVersion{}, err
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("%s", b))
-
-	pv, err := c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	pv, err := c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	if err != nil {
 		return RuleVersion{}, err
 	}
@@ -91,10 +113,12 @@ type ListRulesRequest struct {
 }
 
 func (c *Client) ListRules(ctx context.Context, req ListRulesRequest) ([]RuleVersion, error) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
 	if err := req.PolicyType.Validate(); err != nil {
 		return nil, err
 	}
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return nil, err
 	}
@@ -111,13 +135,15 @@ type GetRuleRequest struct {
 }
 
 func (c *Client) GetRule(ctx context.Context, req GetRuleRequest) (RuleVersion, error) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
 	if err := req.PolicyType.Validate(); err != nil {
 		return RuleVersion{}, err
 	}
 	if req.Name == "" {
 		return RuleVersion{}, fmt.Errorf("%w: name", MissingRequiredValue)
 	}
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return RuleVersion{}, err
 	}
@@ -130,10 +156,12 @@ type UpdateRuleRequest struct {
 }
 
 func (c *Client) UpdateRule(ctx context.Context, req UpdateRuleRequest) (RuleVersion, error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 	if req.Name == "" {
 		return RuleVersion{}, fmt.Errorf("%w: name", MissingRequiredValue)
 	}
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return RuleVersion{}, err
 	}
@@ -142,7 +170,7 @@ func (c *Client) UpdateRule(ctx context.Context, req UpdateRuleRequest) (RuleVer
 		return RuleVersion{}, err
 	}
 
-	pv, err := c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	pv, err := c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	if err != nil {
 		return RuleVersion{}, err
 	}
@@ -158,7 +186,9 @@ type DeleteRuleRequest struct {
 type DeleteRuleResponse struct{}
 
 func (c *Client) DeleteRule(ctx context.Context, req DeleteRuleRequest) (DeleteRuleResponse, error) {
-	p, err := c.GetPolicy(ctx, GetPolicyRequest{req.PolicyType})
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	p, err := c.getPolicy(ctx, GetPolicyRequest{req.PolicyType})
 	if err != nil {
 		return DeleteRuleResponse{}, err
 	}
@@ -170,7 +200,7 @@ func (c *Client) DeleteRule(ctx context.Context, req DeleteRuleRequest) (DeleteR
 	if err != nil {
 		return DeleteRuleResponse{}, err
 	}
-	_, err = c.UpdatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
+	_, err = c.updatePolicy(ctx, UpdatePolicyRequest{req.PolicyType, p})
 	return DeleteRuleResponse{}, err
 }
 

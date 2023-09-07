@@ -163,14 +163,14 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 	}, http.DefaultClient)
 
 	if err != nil {
-		resp.Diagnostics.AddError("Unable to Create Prisma Cloud API Client", "An unexpected error occurred when creating the  Prisma Cloud API client. "+
+		resp.Diagnostics.AddError("Unable to Create Prisma Cloud API Client", "An unexpected error occurred when creating the Prisma Cloud API client. "+
 			"If the error is not clear, please contact the provider developers.\n\n"+
 			"Prisma Cloud Client Error: "+err.Error())
 		return
 	}
 	// Example client configuration for config sources and resources
-	resp.DataSourceData = &client
-	resp.ResourceData = &client
+	resp.DataSourceData = client
+	resp.ResourceData = client
 }
 
 func (p *Provider) Resources(_ context.Context) []func() resource.Resource {

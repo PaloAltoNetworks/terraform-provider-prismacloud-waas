@@ -206,7 +206,7 @@ func newApplicationSpec(t *testing.T, options ...func(spec *ApplicationSpec)) Ap
 	return a
 }
 
-func mustNewClient(t *testing.T, serverURL string) Client {
+func mustNewClient(t *testing.T, serverURL string) *Client {
 	t.Helper()
 	c, err := NewClient(Config{
 		ConsoleURL:         serverURL,

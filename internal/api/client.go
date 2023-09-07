@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/carlmjohnson/requests"
@@ -24,11 +25,12 @@ type Config struct {
 
 type Client struct {
 	apiBuilder *requests.Builder
-	token      string
 	apiVersion string
+	mutex      sync.RWMutex
+	token      string
 }
 
-func NewClient(config Config, c *http.Client) (Client, error) {
+func NewClient(config Config, c *http.Client) (*Client, error) {
 	apiBuilder := requests.URL(config.ConsoleURL).
 		Accept("application/json").
 		Client(c)
@@ -42,13 +44,13 @@ func NewClient(config Config, c *http.Client) (Client, error) {
 	if !config.SkipAuthentication {
 		token, err := client.authenticate(context.Background(), config)
 		if err != nil {
-			return Client{}, err
+			return nil, err
 		}
 		client.token = token
 		c.Transport = client.autorenew(nil)
 		client.apiBuilder = client.apiBuilder.Bearer(token).Client(c)
 	}
-	return client, nil
+	return &client, nil
 }
 
 func (c *Client) authenticate(ctx context.Context, config Config) (string, error) {
