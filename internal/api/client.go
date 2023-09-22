@@ -2,15 +2,13 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/carlmjohnson/requests"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Config struct {
@@ -91,22 +89,15 @@ func (c *Client) autorenew(rt http.RoundTripper) Transport {
 		rt = http.DefaultTransport
 	}
 	return RoundTripFunc(func(req *http.Request) (*http.Response, error) {
-		parts := strings.Split(c.token, ".")
-		if len(parts) != 3 {
-			return nil, fmt.Errorf("invalid number of segments: %s", c.token)
-		}
-		b, err := jwt.DecodeSegment(parts[1])
+		token, _, err := new(jwt.Parser).ParseUnverified(c.token, jwt.MapClaims{})
 		if err != nil {
 			return nil, err
 		}
-		claims := struct {
-			Exp int64
-		}{}
-		err = json.Unmarshal(b, &claims)
+		exp, err := token.Claims.GetExpirationTime()
 		if err != nil {
 			return nil, err
 		}
-		if time.Now().After(time.Unix(claims.Exp-300, 0)) {
+		if exp.Before(time.Now().Add(300 * time.Second)) {
 			var renewal authResp
 			err = c.apiBuilder.Clone().
 				Pathf("api/%s/renew", c.apiVersion).
