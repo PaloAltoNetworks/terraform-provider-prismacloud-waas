@@ -621,5 +621,3 @@ Required:
 - `issuer_name` (String) IssuerName is the certificate issuer common name
 - `not_after` (String) NotAfter is the time the certificate is not valid (expiry time) in RFC3339 format
 - `subject_name` (String) SubjectName is the certificate subject common name
-
-

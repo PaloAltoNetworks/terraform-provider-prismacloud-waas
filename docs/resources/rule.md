@@ -668,5 +668,3 @@ Required:
 Optional:
 
 - `enabled` (Boolean) Enabled indicates if traffic mirroring is enabled
-
-

@@ -39,5 +39,3 @@ Prisma Cloud Collection resource
 - `prisma` (Boolean) Indicates whether this collection originates from Prisma Cloud
 - `supported_types` (Set of String) Indicates the possible usage types the collection can support
 - `system` (Boolean) Indicates whether this collection was created by the system (i.e., a non user) (true) or a real user (false)
-
-
