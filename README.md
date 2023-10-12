@@ -4,8 +4,8 @@ This provider allows for the management of Prisma Cloud Web Application & API Se
 
 ## Requirements
 
-- [Terraform](https://www.terraform.io/downloads.html) >= 1.3.0
-- [Go](https://golang.org/doc/install) >= 1.20
+- [Terraform](https://www.terraform.io/downloads.html) >= 1.6.1
+- [Go](https://golang.org/doc/install) >= 1.21
 
 ## Building The Provider
 
