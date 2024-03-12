@@ -202,7 +202,7 @@ resource "prismacloud-waas_rule" "Example" {
   auto_protect_ports = true
   collections = [
     {
-      name : prismacloud-waas_collection.Example.name
+      name : prismacloud-waas_collection.ContainerExample.name
     }
   ]
   disabled             = true

@@ -1,11 +1,11 @@
 # Terraform Provider for Palo Alto Networks Prisma Cloud Web Application & API Security (WAAS)
 
-This provider allows for the management of Prisma Cloud Web Application & API Security (WAAS) policies. This provider was created using the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework) and can be used as a standalone provider. In the  combined with the broader [Prisma Cloud Terraform Provider][https://github.com/PaloAltoNetworks/terraform-provider-prismacloud] via a [Plugin Mux](https://github.com/hashicorp/terraform-plugin-mux) to manage all Prisma Cloud resources.
+This provider allows for the management of Prisma Cloud Web Application & API Security (WAAS) policies. This provider was created using the [Terraform Plugin Framework](https://github.com/hashicorp/terraform-plugin-framework) and can be used as a standalone provider. In the  combined with the broader [Prisma Cloud Terraform Provider](https://github.com/PaloAltoNetworks/terraform-provider-prismacloud) via a [Plugin Mux](https://github.com/hashicorp/terraform-plugin-mux) to manage all Prisma Cloud resources.
 
 ## Requirements
 
-- [Terraform](https://www.terraform.io/downloads.html) >= 1.6.1
-- [Go](https://golang.org/doc/install) >= 1.21
+- [Terraform](https://www.terraform.io/downloads.html) >= 1.7.4
+- [Go](https://golang.org/doc/install) >= 1.22
 
 ## Building The Provider
 
