@@ -12,7 +12,11 @@ import (
 )
 
 func (c *Client) collectionsEndpoint() *requests.Builder {
-	return c.apiBuilder.Clone().Pathf("api/%s/collections", c.apiVersion)
+	return c.apiBuilder.Clone().Path("collections")
+}
+
+func (c *Client) collectionEndpoint() *requests.Builder {
+	return c.apiBuilder.Clone().Path("collections/")
 }
 
 type Collection struct {
@@ -464,8 +468,7 @@ func (c *Client) UpdateCollection(ctx context.Context, req UpdateCollectionReque
 			}
 		}
 	}
-	// because the API endpoints are degenerate and don't support a trailing slash, we have to re-supply the `collections` path element
-	err := c.collectionsEndpoint().Pathf("./collections/%s", req.Name).BodyJSON(req).Put().Fetch(ctx)
+	err := c.collectionEndpoint().Path(req.Name).BodyJSON(req).Put().Fetch(ctx)
 	if err != nil {
 		return Collection{}, fmt.Errorf("update collection: %w", err)
 	}
@@ -483,7 +486,7 @@ func (c *Client) DeleteCollection(ctx context.Context, req DeleteCollectionReque
 		return DeleteCollectionResponse{}, fmt.Errorf("%w: name", MissingRequiredValue)
 	}
 	// because the API endpoints are degenerate and don't support a trailing slash, we have to re-supply the `collections` path element
-	err := c.collectionsEndpoint().Pathf("./collections/%s", req.Name).Delete().Fetch(ctx)
+	err := c.collectionEndpoint().Path(req.Name).Delete().Fetch(ctx)
 	if err != nil {
 		return DeleteCollectionResponse{}, fmt.Errorf("delete collection: %w", err)
 	}
