@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -23,13 +24,20 @@ type Config struct {
 
 type Client struct {
 	apiBuilder *requests.Builder
-	apiVersion string
 	mutex      sync.RWMutex
 	token      string
 }
 
 func NewClient(config Config, c *http.Client) (*Client, error) {
-	apiBuilder := requests.URL(config.ConsoleURL).
+	uri, err := url.Parse(config.ConsoleURL)
+	if err != nil {
+		return nil, err
+	}
+	if !uri.IsAbs() {
+		return nil, fmt.Errorf("console URL must be absolute and include a valid scheme")
+	}
+	uri = uri.JoinPath("api", config.APIVersion, "/")
+	apiBuilder := requests.URL(uri.String()).
 		Accept("application/json").
 		Client(c)
 	if config.Project != "" {
@@ -37,7 +45,6 @@ func NewClient(config Config, c *http.Client) (*Client, error) {
 	}
 	client := Client{
 		apiBuilder: apiBuilder,
-		apiVersion: config.APIVersion,
 	}
 	if !config.SkipAuthentication {
 		token, err := client.authenticate(context.Background(), config)
@@ -45,7 +52,7 @@ func NewClient(config Config, c *http.Client) (*Client, error) {
 			return nil, err
 		}
 		client.token = token
-		c.Transport = client.autorenew(nil)
+		c.Transport = client.autoRenew(nil)
 		client.apiBuilder = client.apiBuilder.Bearer(token).Client(c)
 	}
 	return &client, nil
@@ -57,7 +64,7 @@ func (c *Client) authenticate(ctx context.Context, config Config) (string, error
 		Password string `json:"password"`
 	}
 	var resp authResp
-	err := requests.URL(fmt.Sprintf("%s/api/%s/authenticate", config.ConsoleURL, config.APIVersion)).
+	err := c.apiBuilder.Clone().Path("authenticate").
 		BodyJSON(authReq{
 			Username: config.Username,
 			Password: config.Password,
@@ -84,7 +91,7 @@ func (rtf RoundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 
 var _ Transport = RoundTripFunc(nil)
 
-func (c *Client) autorenew(rt http.RoundTripper) Transport {
+func (c *Client) autoRenew(rt http.RoundTripper) Transport {
 	if rt == nil {
 		rt = http.DefaultTransport
 	}
@@ -100,7 +107,7 @@ func (c *Client) autorenew(rt http.RoundTripper) Transport {
 		if exp.Before(time.Now().Add(300 * time.Second)) {
 			var renewal authResp
 			err = c.apiBuilder.Clone().
-				Pathf("api/%s/renew", c.apiVersion).
+				Path("renew").
 				ToJSON(&renewal).
 				Fetch(context.Background())
 			if err != nil {

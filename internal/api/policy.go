@@ -249,11 +249,9 @@ func (p *Policy) findApplicationSpecLocation(id string) (ApplicationSpecLocation
 	return ApplicationSpecLocation{}, NotFound
 }
 
-const firewallPolicyPathFormat = "api/%s/policies/firewall/app/%s"
-
 func (c *Client) getPolicyEndpointBuilder(policyType PolicyType) (*requests.Builder, error) {
 	policyBuilder := func(policyPath string) *requests.Builder {
-		return c.apiBuilder.Clone().Pathf(firewallPolicyPathFormat, c.apiVersion, policyPath)
+		return c.apiBuilder.Clone().Path("policies/firewall/app/").Path(policyPath)
 	}
 	switch policyType {
 	case appEmbedded:
@@ -263,7 +261,7 @@ func (c *Client) getPolicyEndpointBuilder(policyType PolicyType) (*requests.Buil
 	case host:
 		return policyBuilder("host"), nil
 	default:
-		return nil, fmt.Errorf("unhandled policyType (%s)", policyType)
+		return nil, fmt.Errorf("unhandled policyType(%q)", policyType)
 	}
 }
 
