@@ -1,14 +1,16 @@
 terraform {
   required_providers {
     prismacloud-waas = {
-      source  = "PaloAltoNetworks/prismacloud-waas"
-      version = "1.0.1"
+      # source  = "PaloAltoNetworks/prismacloud-waas"
+      source  = "terraform.local/PaloAltoNetworks/prismacloud-waas"
+      version = "1.0.2"
     }
   }
 }
 
 variable "api_version" {
   type = string
+  default = "v1"
 }
 
 variable "console_url" {
