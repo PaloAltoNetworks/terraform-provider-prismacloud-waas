@@ -3,7 +3,7 @@ terraform {
     prismacloud-waas = {
       # source  = "terraform.local/paloaltonetworks/prismacloud-waas"
       source  = "terraform.registry.io/paloaltonetworks/prismacloud-waas"
-      version = "1.0.2"
+      version = "1.0.3"
     }
   }
 }
