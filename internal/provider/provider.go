@@ -71,10 +71,6 @@ func (p *Provider) Schema(_ context.Context, _ provider.SchemaRequest, response 
 				MarkdownDescription: "If true, skip certificate verification",
 				Optional:            true,
 			},
-			"config_file": schema.StringAttribute{
-				MarkdownDescription: "Configuration file in JSON format. See examples/creds.json",
-				Optional:            true,
-			},
 		},
 	}
 }
@@ -85,7 +81,6 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 	project := os.Getenv("PRISMACLOUDCOMPUTE_PROJECT")
 	username := os.Getenv("PRISMACLOUDCOMPUTE_USERNAME")
 	password := os.Getenv("PRISMACLOUDCOMPUTE_PASSWORD")
-	// configFile := os.Getenv("PRISMACLOUDCOMPUTE_CONFIG_FILE")
 
 	var config providerModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
