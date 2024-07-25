@@ -99,7 +99,7 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 		resp.Diagnostics.AddAttributeError(path.Root("consoleURL"), "Unknown API consoleURL", "The provider cannot create the API client as there is an unknown configuration value for the API consoleURL. "+
 			"Either target apply the source of the value first, set the value statically in the configuration, or use the PRISMACLOUDCOMPUTE_CONSOLE_URL environment variable.")
 	}
-	if config.APIVersion.IsUnknown() {
+	if config.APIVersion.IsUnknown() || config.APIVersion.IsNull() {
 		config.APIVersion = types.StringValue(apiVersionDefault)
 	}
 	if config.Project.IsUnknown() {
