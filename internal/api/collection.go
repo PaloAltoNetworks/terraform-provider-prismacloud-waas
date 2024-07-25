@@ -23,7 +23,6 @@ type Collection struct {
 	AccountIDs     []string  `json:"accountIDs"`
 	AppIDs         []string  `json:"appIDs"`
 	Clusters       []string  `json:"clusters"`
-	CodeRepos      []string  `json:"codeRepos"`
 	Color          string    `json:"color"`
 	Containers     []string  `json:"containers"`
 	Description    string    `json:"description"`
@@ -59,7 +58,6 @@ func SupportedTypes(c Collection) TypeSet {
 		AccountIDs: c.AccountIDs,
 		AppIDs:     c.AppIDs,
 		Clusters:   c.Clusters,
-		CodeRepos:  c.CodeRepos,
 		Containers: c.Containers,
 		Functions:  c.Functions,
 		Hosts:      c.Hosts,
@@ -74,7 +72,6 @@ type CollectionTypeCriteria struct {
 	AccountIDs []string
 	AppIDs     []string
 	Clusters   []string
-	CodeRepos  []string
 	Containers []string
 	Functions  []string
 	Hosts      []string
@@ -176,21 +173,21 @@ func (c CollectionTypeCriteria) SupportedTypes() TypeSet {
 		return len(s) == 0 || s[0] == all || s[0] == ""
 	}
 	t := NewTypeSet()
-	if emptyOrAll(c.CodeRepos) && emptyOrAll(c.Functions) &&
+	if emptyOrAll(c.Functions) &&
 		emptyOrAll(c.Hosts) && emptyOrAll(c.Labels) && emptyOrAll(c.Namespaces) {
 		t.Add(appEmbeddedPolicy) // Allows AppIDs, AccountIDs, Clusters, Images
 	}
-	if !emptyOrAll(c.Images) && emptyOrAll(c.AppIDs) && emptyOrAll(c.CodeRepos) &&
+	if !emptyOrAll(c.Images) && emptyOrAll(c.AppIDs) &&
 		emptyOrAll(c.Functions) {
 		t.Add(containerPolicy) // Requires Image, allows AccountIDs, Clusters. Containers, Hosts, Labels, Namespaces,
 	}
 	if emptyOrAll(c.AccountIDs) && emptyOrAll(c.AppIDs) && emptyOrAll(c.Clusters) &&
-		emptyOrAll(c.CodeRepos) && emptyOrAll(c.Containers) && emptyOrAll(c.Functions) &&
+		emptyOrAll(c.Containers) && emptyOrAll(c.Functions) &&
 		emptyOrAll(c.Images) && emptyOrAll(c.Labels) && emptyOrAll(c.Namespaces) {
 		t.Add(hostPolicy) // Allows Hosts
 	}
 	if !emptyOrAll(c.Functions) && emptyOrAll(c.AccountIDs) && emptyOrAll(c.AppIDs) &&
-		emptyOrAll(c.Clusters) && emptyOrAll(c.CodeRepos) && emptyOrAll(c.Containers) &&
+		emptyOrAll(c.Clusters) && emptyOrAll(c.Containers) &&
 		emptyOrAll(c.Hosts) && emptyOrAll(c.Namespaces) {
 		t.Add(serverlessPolicy) // Allows Functions and Labels
 	}
@@ -302,7 +299,6 @@ type CreateCollectionRequest struct {
 	AccountIDs     []string `json:"accountIDs"`
 	AppIDs         []string `json:"appIDs"`
 	Clusters       []string `json:"clusters"`
-	CodeRepos      []string `json:"codeRepos"`
 	Color          string   `json:"color"`
 	Containers     []string `json:"containers"`
 	Description    string   `json:"description"`
@@ -320,7 +316,6 @@ func (c CreateCollectionRequest) TypeCriteria() CollectionTypeCriteria {
 		AccountIDs: c.AccountIDs,
 		AppIDs:     c.AppIDs,
 		Clusters:   c.Clusters,
-		CodeRepos:  c.CodeRepos,
 		Containers: c.Containers,
 		Functions:  c.Functions,
 		Hosts:      c.Hosts,
@@ -335,7 +330,6 @@ func (c CreateCollectionRequest) PrismaCollectionSpec() PrismaCollectionSpec {
 		AccountIDs:  c.AccountIDs,
 		AppIDs:      c.AppIDs,
 		Clusters:    c.Clusters,
-		CodeRepos:   c.CodeRepos,
 		Color:       c.Color,
 		Containers:  c.Containers,
 		Description: c.Description,
@@ -369,7 +363,6 @@ func (p PrismaCollectionSpec) SupportedTypes() TypeSet {
 		AccountIDs: p.AccountIDs,
 		AppIDs:     p.AppIDs,
 		Clusters:   p.Clusters,
-		CodeRepos:  p.CodeRepos,
 		Containers: p.Containers,
 		Functions:  p.Functions,
 		Hosts:      p.Hosts,
@@ -411,7 +404,6 @@ type UpdateCollectionRequest struct {
 	AccountIDs     []string `json:"accountIDs"`
 	AppIDs         []string `json:"appIDs"`
 	Clusters       []string `json:"clusters"`
-	CodeRepos      []string `json:"codeRepos"`
 	Color          string   `json:"color"`
 	Containers     []string `json:"containers"`
 	Description    string   `json:"description"`
@@ -428,7 +420,6 @@ func (u UpdateCollectionRequest) TypeCriteria() CollectionTypeCriteria {
 		AccountIDs: u.AccountIDs,
 		AppIDs:     u.AppIDs,
 		Clusters:   u.Clusters,
-		CodeRepos:  u.CodeRepos,
 		Containers: u.Containers,
 		Functions:  u.Functions,
 		Hosts:      u.Hosts,
@@ -443,7 +434,6 @@ func (u UpdateCollectionRequest) PrismaCollectionSpec() PrismaCollectionSpec {
 		AccountIDs:  u.AccountIDs,
 		AppIDs:      u.AppIDs,
 		Clusters:    u.Clusters,
-		CodeRepos:   u.CodeRepos,
 		Color:       u.Color,
 		Containers:  u.Containers,
 		Description: u.Description,

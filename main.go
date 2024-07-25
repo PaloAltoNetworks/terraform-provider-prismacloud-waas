@@ -32,11 +32,17 @@ func main() {
 	var debug bool
 
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
+
+	var local bool
+	flag.BoolVar(&local, "local", false, "set to true for local provider development")
 	flag.Parse()
 
+	address := "registry.terraform.io/paloaltonetworks/prismacloud-waas"
+	if local {
+		address = "terraform.local/paloaltonetworks/prismacloud-waas"
+	}
 	opts := providerserver.ServeOpts{
-		// TODO: Update this string with the published name of your provider.
-		Address: "terraform.local/PaloAltoNetworks/prismacloud-waas",
+		Address: address,
 		Debug:   debug,
 	}
 

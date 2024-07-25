@@ -43,7 +43,6 @@ type CollectionClient interface {
 type CollectionModel struct {
 	AppIDs         types.List   `tfsdk:"app_ids"`
 	AccountIDs     types.List   `tfsdk:"account_ids"`
-	CodeRepos      types.List   `tfsdk:"code_repos"`
 	Containers     types.List   `tfsdk:"containers"`
 	Clusters       types.List   `tfsdk:"clusters"`
 	Color          types.String `tfsdk:"color"`
@@ -79,11 +78,6 @@ func (*CollectionModel) Schema() schema.Schema {
 			"clusters": schema.ListAttribute{
 				ElementType:         types.StringType,
 				MarkdownDescription: "List of Kubernetes clusters",
-				Optional:            true,
-			},
-			"code_repos": schema.ListAttribute{
-				ElementType:         types.StringType,
-				MarkdownDescription: "List of codeRepos",
 				Optional:            true,
 			},
 			"color": schema.StringAttribute{
@@ -218,7 +212,6 @@ func (r *Collection) Create(ctx context.Context, req resource.CreateRequest, res
 		AccountIDs:     m.AccountIDs,
 		AppIDs:         m.AppIDs,
 		Clusters:       m.Clusters,
-		CodeRepos:      m.CodeRepos,
 		Color:          m.Color,
 		Containers:     m.Containers,
 		Description:    m.Description,
@@ -301,7 +294,6 @@ func (r *Collection) Update(ctx context.Context, req resource.UpdateRequest, res
 		AccountIDs:     c.AccountIDs,
 		AppIDs:         c.AppIDs,
 		Clusters:       c.Clusters,
-		CodeRepos:      c.CodeRepos,
 		Color:          c.Color,
 		Containers:     c.Containers,
 		Description:    c.Description,
@@ -373,7 +365,6 @@ func (*CollectionModel) FromAPI(ctx context.Context, a api.Collection) (Collecti
 	return CollectionModel{
 		AppIDs:      strSliceToList(a.AppIDs),
 		AccountIDs:  strSliceToList(a.AccountIDs),
-		CodeRepos:   strSliceToList(a.CodeRepos),
 		Containers:  strSliceToList(a.Containers),
 		Clusters:    strSliceToList(a.Clusters),
 		Color:       types.StringValue(a.Color),
@@ -413,7 +404,6 @@ func (m *CollectionModel) ToAPI(ctx context.Context) (api.Collection, diag.Diagn
 		AccountIDs:  elemsToStrSlice(m.AccountIDs),
 		AppIDs:      elemsToStrSlice(m.AppIDs),
 		Clusters:    elemsToStrSlice(m.Clusters),
-		CodeRepos:   elemsToStrSlice(m.CodeRepos),
 		Color:       m.Color.ValueString(),
 		Containers:  elemsToStrSlice(m.Containers),
 		Description: m.Description.ValueString(),
