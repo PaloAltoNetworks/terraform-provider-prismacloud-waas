@@ -25,7 +25,6 @@ Prisma Cloud Collection resource
 - `account_ids` (List of String) List of accountIDs
 - `app_ids` (List of String) List of appIDs
 - `clusters` (List of String) List of Kubernetes clusters
-- `code_repos` (List of String) List of codeRepos
 - `color` (String) Color code for the collection
 - `containers` (List of String) List of containers
 - `description` (String) Free-form text

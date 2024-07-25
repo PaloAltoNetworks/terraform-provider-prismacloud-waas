@@ -16,14 +16,16 @@ description: |-
 terraform {
   required_providers {
     prismacloud-waas = {
-      source  = "PaloAltoNetworks/prismacloud-waas"
-      version = "1.0.1"
+      # source  = "terraform.local/paloaltonetworks/prismacloud-waas"
+      source  = "terraform.registry.io/paloaltonetworks/prismacloud-waas"
+      version = "1.0.2"
     }
   }
 }
 
 variable "api_version" {
-  type = string
+  type    = string
+  default = "v1"
 }
 
 variable "console_url" {
@@ -59,6 +61,5 @@ provider "prismacloud-waas" {
 ### Optional
 
 - `api_version` (String) Version of the Prisma Cloud API
-- `config_file` (String) Configuration file in JSON format. See examples/creds.json
 - `project` (String) Project for multi-tenant environments
 - `skip_cert_verification` (Boolean) If true, skip certificate verification

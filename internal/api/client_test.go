@@ -49,17 +49,17 @@ func TestNewClient(t *testing.T) {
 		t.Error(err)
 	}
 
-	//t.Run("list_collections", func(t *testing.T) {
-	//	resp, err := c.ListCollections(context.Background(), ListCollectionsRequest{})
-	//	if err != nil {
-	//		t.Error(err)
-	//	}
-	//	b, err := json.MarshalIndent(resp, "", "\t")
-	//	if err != nil {
-	//		t.Error(err)
-	//	}
-	//	fmt.Printf("%s", b)
-	//})
+	t.Run("list_collections", func(t *testing.T) {
+		resp, err := c.ListCollections(context.Background(), ListCollectionsRequest{})
+		if err != nil {
+			t.Error(err)
+		}
+		b, err := json.MarshalIndent(resp, "", "\t")
+		if err != nil {
+			t.Error(err)
+		}
+		fmt.Printf("%s", b)
+	})
 
 	t.Run("get_policy", func(t *testing.T) {
 		ctx := context.Background()
