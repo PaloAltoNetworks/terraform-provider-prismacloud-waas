@@ -71,6 +71,11 @@ func (p *Provider) Schema(_ context.Context, _ provider.SchemaRequest, response 
 				MarkdownDescription: "If true, skip certificate verification",
 				Optional:            true,
 			},
+			"config_file": schema.StringAttribute{
+				DeprecationMessage:  "This attribute is unused and will be removed in the next major version of the provider",
+				MarkdownDescription: "Configuration file in JSON format. See examples/creds.json",
+				Optional:            true,
+			},
 		},
 	}
 }

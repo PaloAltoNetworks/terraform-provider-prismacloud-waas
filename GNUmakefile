@@ -9,4 +9,4 @@ testacc:
 .PHONY: build-local
 build-local:
 	go build .
-	mkdir -p terraform.local/paloaltonetworks/prismacloud-waas/1.0.2/darwin_amd64 && cp terraform-provider-prismacloud-waas terraform.local/paloaltonetworks/prismacloud-waas/1.0.2/darwin_amd64/terraform-provider-prismacloud-waas_v1.0.2
+	mkdir -p terraform.local/paloaltonetworks/prismacloud-waas/1.0.4/darwin_amd64 && cp terraform-provider-prismacloud-waas terraform.local/paloaltonetworks/prismacloud-waas/1.0.4/darwin_amd64/terraform-provider-prismacloud-waas_v1.0.4
