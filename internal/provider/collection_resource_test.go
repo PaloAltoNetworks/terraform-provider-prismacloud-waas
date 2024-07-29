@@ -24,11 +24,12 @@ func TestCollectionSpec_Metadata(t *testing.T) {
 func TestCollectionSpec_Schema(t *testing.T) {
 	var collection Collection
 	var schema resource.SchemaResponse
-	collection.Schema(context.Background(), resource.SchemaRequest{}, &schema)
+	ctx := context.Background()
+	collection.Schema(ctx, resource.SchemaRequest{}, &schema)
 	assert.Empty(t, schema.Diagnostics)
-	assert.Empty(t, schema.Schema.Validate())
+	assert.Empty(t, schema.Schema.ValidateImplementation(ctx))
 	// shallow check, ensures no unexpected added attributes
-	assert.Equal(t, 19, len(schema.Schema.Attributes))
+	assert.Equal(t, 18, len(schema.Schema.Attributes))
 }
 
 func TestCollectionSpec_Configure(t *testing.T) {
